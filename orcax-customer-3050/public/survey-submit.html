@@ -1,49 +1,82 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>고객 만족도 설문조사</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background-color: #fff;
+      margin: 0;
       padding: 20px;
+      background-color: #f4f7fa;
     }
+
     .container {
       max-width: 600px;
       margin: auto;
-      background: white;
-      padding: 30px;
+      background: #fff;
+      padding: 25px;
       border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
     }
+
     h2 {
       text-align: center;
-      color: #0055a5;
+      color: #003366;
+      font-size: 1.5em;
+      margin-bottom: 20px;
     }
+
     label {
       display: block;
       margin-top: 15px;
       font-weight: bold;
+      font-size: 0.95em;
     }
-    input, select, textarea, button {
+
+    input, select, textarea {
       width: 100%;
       padding: 10px;
       margin-top: 5px;
-      border-radius: 5px;
+      font-size: 1em;
       border: 1px solid #ccc;
-      font-size: 1em;
+      border-radius: 6px;
     }
+
+    textarea {
+      resize: vertical;
+    }
+
     button {
-      background-color: #007bff;
-      color: white;
       margin-top: 20px;
-      cursor: pointer;
+      width: 100%;
+      padding: 12px;
+      background-color: #007bff;
+      border: none;
+      color: white;
       font-size: 1em;
+      border-radius: 6px;
+      cursor: pointer;
     }
+
     button:hover {
       background-color: #0056b3;
+    }
+
+    .message {
+      margin-top: 15px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+      .container {
+        padding: 15px;
+      }
     }
   </style>
 </head>
@@ -52,7 +85,7 @@
     <h2>고객 만족도 설문조사</h2>
     <form id="survey-form">
       <label for="name">이름 (선택)</label>
-      <input type="text" id="name" name="name" placeholder="이름을 입력해주세요 (선택)">
+      <input type="text" id="name" name="name" placeholder="이름을 입력해주세요" />
 
       <label for="rating">서비스 전반에 대한 만족도는?</label>
       <select id="rating" name="rating" required>
@@ -68,13 +101,14 @@
       <textarea id="feedback" name="feedback" rows="4" placeholder="의견을 자유롭게 작성해주세요."></textarea>
 
       <button type="submit">설문 제출</button>
+      <div class="message" id="response"></div>
     </form>
-    <p id="response" style="margin-top:15px;color:green;"></p>
   </div>
 
   <script>
-    document.getElementById("survey-form").addEventListener("submit", async function(e) {
+    document.getElementById("survey-form").addEventListener("submit", async function (e) {
       e.preventDefault();
+
       const data = {
         name: document.getElementById("name").value,
         rating: document.getElementById("rating").value,
@@ -84,16 +118,22 @@
       try {
         const res = await fetch("https://orcax-core-radm.onrender.com/api/survey", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json"
+          },
           body: JSON.stringify(data)
         });
+
         const result = await res.json();
-        document.getElementById("response").textContent = "제출 감사합니다!";
+        document.getElementById("response").textContent = result.message || "제출 완료!";
+        document.getElementById("response").style.color = "green";
         document.getElementById("survey-form").reset();
       } catch (err) {
         document.getElementById("response").textContent = "제출에 실패했습니다. 다시 시도해주세요.";
+        document.getElementById("response").style.color = "red";
       }
     });
   </script>
 </body>
 </html>
+
