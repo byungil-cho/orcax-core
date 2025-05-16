@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>공지사항 등록</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 20px;
+      background-color: #f0f4f8;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      color: #003366;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
+      margin-bottom: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+
+    button {
+      background-color: #0066cc;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    #result {
+      margin-top: 16px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h2>📢 공지사항 등록</h2>
+  
+  <label for="title">제목</label>
+  <input type="text" id="title" placeholder="공지 제목을 입력하세요" />
+
+  <label for="content">내용</label>
+  <textarea id="content" rows="6" placeholder="공지 내용을 입력하세요"></textarea>
+
+  <button onclick="submitNotice()">공지 등록</button>
+
+  <div id="result"></div>
+
+  <script>
+    function submitNotice() {
+      const title = document.getElementById("title").value;
+      const content = document.getElementById("content").value;
+      const result = document.getElementById("result");
+
+      if (!title || !content) {
+        result.style.color = "red";
+        result.textContent = "제목과 내용을 모두 입력해주세요.";
+        return;
+      }
+
+      fetch("https://orcax-core-radm.onrender.com/api/notices", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ title, content })
+      })
+      .then(res => res.json())
+      .then(data => {
+        result.style.color = "green";
+        result.textContent = "✅ 공지 등록 성공!";
+      })
+      .catch(err => {
+        result.style.color = "red";
+        result.textContent = "❌ 서버 오류: " + err.message;
+      });
+    }
+  </script>
+</body>
+</html>
