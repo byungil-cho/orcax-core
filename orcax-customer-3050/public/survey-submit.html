@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>고객 만족도 설문조사</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #fff;
+      padding: 20px;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #0055a5;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    input, select, textarea, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 1em;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      margin-top: 20px;
+      cursor: pointer;
+      font-size: 1em;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>고객 만족도 설문조사</h2>
+    <form id="survey-form">
+      <label for="name">이름 (선택)</label>
+      <input type="text" id="name" name="name" placeholder="이름을 입력해주세요 (선택)">
+
+      <label for="rating">서비스 전반에 대한 만족도는?</label>
+      <select id="rating" name="rating" required>
+        <option value="">선택하세요</option>
+        <option value="5">매우 만족</option>
+        <option value="4">만족</option>
+        <option value="3">보통</option>
+        <option value="2">불만족</option>
+        <option value="1">매우 불만족</option>
+      </select>
+
+      <label for="feedback">추가 의견이나 건의사항이 있다면 적어주세요:</label>
+      <textarea id="feedback" name="feedback" rows="4" placeholder="의견을 자유롭게 작성해주세요."></textarea>
+
+      <button type="submit">설문 제출</button>
+    </form>
+    <p id="response" style="margin-top:15px;color:green;"></p>
+  </div>
+
+  <script>
+    document.getElementById("survey-form").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const data = {
+        name: document.getElementById("name").value,
+        rating: document.getElementById("rating").value,
+        feedback: document.getElementById("feedback").value
+      };
+
+      try {
+        const res = await fetch("https://orcax-core-radm.onrender.com/api/survey", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        });
+        const result = await res.json();
+        document.getElementById("response").textContent = "제출 감사합니다!";
+        document.getElementById("survey-form").reset();
+      } catch (err) {
+        document.getElementById("response").textContent = "제출에 실패했습니다. 다시 시도해주세요.";
+      }
+    });
+  </script>
+</body>
+</html>
