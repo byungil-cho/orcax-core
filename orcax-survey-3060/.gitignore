@@ -1,0 +1,20 @@
+# Node modules
+node_modules/
+
+# 환경변수
+.env
+
+# 로그 파일
+*.log
+npm-debug.log*
+
+# 운영 체제별 생성 파일
+.DS_Store
+Thumbs.db
+
+# VSCode 설정
+.vscode/
+
+# 배포 시 생성되는 빌드 파일 (옵션)
+dist/
+build/
