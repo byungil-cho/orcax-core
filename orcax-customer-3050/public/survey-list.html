@@ -1,90 +1,100 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <title>고객 만족도 결과 보기</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>설문 결과 보기</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background-color: #f5f5f5;
+      margin: 0;
       padding: 20px;
+      background-color: #f4f7fa;
     }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: #fff;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+
     h2 {
       text-align: center;
-      color: #0055a5;
+      color: #003366;
+      font-size: 1.6em;
+      margin-bottom: 20px;
     }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-      background-color: white;
+
+    .entry {
+      border-left: 4px solid #28a745;
+      padding: 15px;
+      margin-bottom: 15px;
+      background-color: #fdfdfd;
+      border-radius: 6px;
     }
-    th, td {
-      border: 1px solid #ddd;
-      padding: 10px;
-      text-align: left;
-      font-size: 0.95em;
+
+    .entry .meta {
+      font-size: 0.9em;
+      color: #666;
+      margin-bottom: 8px;
     }
-    th {
-      background-color: #007bff;
-      color: white;
+
+    .entry .feedback {
+      color: #333;
+      line-height: 1.4;
     }
-    tr:nth-child(even) {
-      background-color: #f9f9f9;
-    }
-    .loading {
-      text-align: center;
-      font-size: 1.1em;
-      color: gray;
+
+    @media (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+      .container {
+        padding: 15px;
+      }
     }
   </style>
 </head>
 <body>
-  <h2>고객 만족도 설문 결과</h2>
-  <div class="loading" id="loading">불러오는 중입니다...</div>
-  <table id="survey-table" style="display:none;">
-    <thead>
-      <tr>
-        <th>이름</th>
-        <th>만족도</th>
-        <th>의견</th>
-        <th>작성일</th>
-      </tr>
-    </thead>
-    <tbody id="survey-body">
-    </tbody>
-  </table>
+  <div class="container">
+    <h2>📋 고객 만족도 설문 결과</h2>
+    <div id="survey-results">불러오는 중입니다...</div>
+  </div>
 
   <script>
-    async function fetchSurveys() {
-      try {
-        const res = await fetch("https://orcax-core-radm.onrender.com/api/survey");
-        const data = await res.json();
+    fetch("https://orcax-core-radm.onrender.com/api/survey")
+      .then(res => res.json())
+      .then(data => {
+        const container = document.getElementById("survey-results");
+        if (!data.length) {
+          container.innerHTML = "<p>아직 설문이 등록되지 않았습니다.</p>";
+          return;
+        }
 
-        const tableBody = document.getElementById("survey-body");
-        const table = document.getElementById("survey-table");
-        const loading = document.getElementById("loading");
-
+        container.innerHTML = "";
         data.forEach(entry => {
-          const row = document.createElement("tr");
+          const div = document.createElement("div");
+          div.className = "entry";
 
-          row.innerHTML = `
-            <td>${entry.name || "(무명)"}</td>
-            <td>${entry.rating}점</td>
-            <td>${entry.feedback || "-"}</td>
-            <td>${new Date(entry.createdAt).toLocaleString()}</td>
+          const date = new Date(entry.createdAt).toLocaleString("ko-KR");
+
+          div.innerHTML = `
+            <div class="meta">이름: ${entry.name || "익명"} | 만족도: ${entry.rating}점 | ${date}</div>
+            <div class="feedback">${entry.feedback || "(의견 없음)"}</div>
           `;
-
-          tableBody.appendChild(row);
+          container.appendChild(div);
         });
-
-        loading.style.display = "none";
-        table.style.display = "table";
-      } catch (err) {
-        document.getElementById("loading").textContent = "설문 데이터를 불러올 수 없습니다.";
-      }
-    }
+      })
+      .catch(err => {
+        document.getElementById("survey-results").innerHTML =
+          "<p style='color:red;'>설문 데이터를 불러오지 못했습니다.</p>";
+        console.error(err);
+      });
+  </script>
+</body>
+</html>
 
     fetchSurveys();
   </script>
