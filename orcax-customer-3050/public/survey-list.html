@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>고객 만족도 결과 보기</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f5f5f5;
+      padding: 20px;
+    }
+    h2 {
+      text-align: center;
+      color: #0055a5;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background-color: white;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: left;
+      font-size: 0.95em;
+    }
+    th {
+      background-color: #007bff;
+      color: white;
+    }
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    .loading {
+      text-align: center;
+      font-size: 1.1em;
+      color: gray;
+    }
+  </style>
+</head>
+<body>
+  <h2>고객 만족도 설문 결과</h2>
+  <div class="loading" id="loading">불러오는 중입니다...</div>
+  <table id="survey-table" style="display:none;">
+    <thead>
+      <tr>
+        <th>이름</th>
+        <th>만족도</th>
+        <th>의견</th>
+        <th>작성일</th>
+      </tr>
+    </thead>
+    <tbody id="survey-body">
+    </tbody>
+  </table>
+
+  <script>
+    async function fetchSurveys() {
+      try {
+        const res = await fetch("https://orcax-core-radm.onrender.com/api/survey");
+        const data = await res.json();
+
+        const tableBody = document.getElementById("survey-body");
+        const table = document.getElementById("survey-table");
+        const loading = document.getElementById("loading");
+
+        data.forEach(entry => {
+          const row = document.createElement("tr");
+
+          row.innerHTML = `
+            <td>${entry.name || "(무명)"}</td>
+            <td>${entry.rating}점</td>
+            <td>${entry.feedback || "-"}</td>
+            <td>${new Date(entry.createdAt).toLocaleString()}</td>
+          `;
+
+          tableBody.appendChild(row);
+        });
+
+        loading.style.display = "none";
+        table.style.display = "table";
+      } catch (err) {
+        document.getElementById("loading").textContent = "설문 데이터를 불러올 수 없습니다.";
+      }
+    }
+
+    fetchSurveys();
+  </script>
+</body>
+</html>
