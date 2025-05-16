@@ -4,51 +4,111 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>설문 결과 리스트</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f8f9fa;
-      padding: 20px;
+      font-family: 'Noto Sans KR', sans-serif;
+      background: linear-gradient(to right, #f0f2f5, #ffffff);
+      margin: 0;
+      padding: 40px 16px;
     }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    }
+
     h2 {
       text-align: center;
-      margin-bottom: 20px;
+      color: #333;
+      margin-bottom: 24px;
     }
+
     table {
       width: 100%;
       border-collapse: collapse;
-      background: white;
-      box-shadow: 0 0 8px rgba(0,0,0,0.05);
+      overflow-x: auto;
     }
+
     th, td {
-      padding: 12px;
-      border: 1px solid #dee2e6;
+      padding: 14px 10px;
       text-align: center;
+      border-bottom: 1px solid #ddd;
+      font-size: 0.95rem;
     }
+
     th {
       background-color: #007BFF;
       color: white;
+      font-size: 1rem;
     }
+
     tbody tr:nth-child(even) {
-      background-color: #f1f3f5;
+      background-color: #f8f9fa;
+    }
+
+    .no-data {
+      text-align: center;
+      padding: 20px;
+      color: #888;
+      font-style: italic;
+    }
+
+    @media (max-width: 600px) {
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+
+      thead {
+        display: none;
+      }
+
+      tr {
+        margin-bottom: 15px;
+        background: #f9f9f9;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        padding: 12px;
+      }
+
+      td {
+        text-align: left;
+        padding: 8px 10px;
+        font-size: 0.9rem;
+        border-bottom: none;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      td::before {
+        content: attr(data-label);
+        font-weight: bold;
+        color: #555;
+      }
     }
   </style>
 </head>
 <body>
-  <h2>설문 결과 리스트</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>이름</th>
-        <th>만족도</th>
-        <th>의견</th>
-        <th>제출일</th>
-      </tr>
-    </thead>
-    <tbody id="surveyBody">
-      <tr><td colspan="4">로딩 중...</td></tr>
-    </tbody>
-  </table>
+  <div class="container">
+    <h2>설문 결과 리스트</h2>
+    <table id="surveyTable">
+      <thead>
+        <tr>
+          <th>이름</th>
+          <th>만족도</th>
+          <th>의견</th>
+          <th>제출일</th>
+        </tr>
+      </thead>
+      <tbody id="surveyBody">
+        <tr><td colspan="4" class="no-data">설문 데이터를 불러오는 중입니다...</td></tr>
+      </tbody>
+    </table>
+  </div>
 
   <script>
     fetch('https://orcax-survey-3060.onrender.com/api/survey')
@@ -58,17 +118,17 @@
         tbody.innerHTML = '';
 
         if (data.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="4">제출된 설문이 없습니다.</td></tr>';
+          tbody.innerHTML = `<tr><td colspan="4" class="no-data">아직 제출된 설문이 없습니다.</td></tr>`;
           return;
         }
 
         data.forEach(item => {
           const row = document.createElement('tr');
           row.innerHTML = `
-            <td>${item.name}</td>
-            <td>${item.satisfaction}</td>
-            <td>${item.feedback}</td>
-            <td>${new Date(item.createdAt).toLocaleString()}</td>
+            <td data-label="이름">${item.name}</td>
+            <td data-label="만족도">${item.satisfaction}</td>
+            <td data-label="의견">${item.feedback || '—'}</td>
+            <td data-label="제출일">${new Date(item.createdAt).toLocaleString()}</td>
           `;
           tbody.appendChild(row);
         });
@@ -76,13 +136,12 @@
       .catch(err => {
         console.error(err);
         document.getElementById('surveyBody').innerHTML =
-          '<tr><td colspan="4">데이터를 불러오는 데 실패했습니다.</td></tr>';
+          `<tr><td colspan="4" class="no-data">데이터를 불러오는 데 실패했습니다.</td></tr>`;
       });
   </script>
 </body>
 </html>
 
-</html>
 
 
 
