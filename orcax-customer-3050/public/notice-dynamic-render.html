@@ -3,69 +3,69 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>공지사항 안내</title>
+  <title>공지사항</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background-color: #f9fbff;
       margin: 0;
       padding: 20px;
+      background-color: #f0f2f5;
     }
 
     .container {
       max-width: 800px;
-      margin: 0 auto;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
     }
 
     h2 {
-      color: #003366;
       text-align: center;
+      color: #003366;
+      font-size: 1.6em;
       margin-bottom: 30px;
-      font-size: 1.5em;
     }
 
     .notice {
-      background-color: #fff;
-      border-left: 5px solid #007bff;
-      padding: 20px;
+      background: #fdfdfd;
+      border-left: 4px solid #007bff;
+      padding: 15px;
       margin-bottom: 20px;
       border-radius: 6px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
-    .notice h3 {
-      margin: 0;
+    .notice-title {
+      font-weight: bold;
       font-size: 1.1em;
-      color: #222;
+      margin-bottom: 5px;
     }
 
-    .notice p {
-      margin: 10px 0 0;
+    .notice-content {
+      margin: 8px 0;
       color: #444;
-      font-size: 0.95em;
+      line-height: 1.5;
     }
 
-    .date {
+    .notice-date {
       font-size: 0.85em;
       color: #888;
-      margin-top: 10px;
+      text-align: right;
     }
 
     @media (max-width: 600px) {
       body {
         padding: 10px;
       }
-      h2 {
-        font-size: 1.3em;
-      }
-      .notice {
+      .container {
         padding: 15px;
       }
-      .notice h3 {
-        font-size: 1em;
+      h2 {
+        font-size: 1.4em;
       }
-      .notice p {
-        font-size: 0.9em;
+      .notice-title {
+        font-size: 1em;
       }
     }
   </style>
@@ -73,12 +73,12 @@
 <body>
   <div class="container">
     <h2>📢 공지사항</h2>
-    <div id="notices">불러오는 중...</div>
+    <div id="notices">공지사항을 불러오는 중입니다...</div>
   </div>
 
   <script>
-    fetch("/api/notices")
-      .then(res => res.json())
+    fetch("https://orcax-core-radm.onrender.com/api/notices")
+      .then(response => response.json())
       .then(data => {
         const container = document.getElementById("notices");
         if (data.length === 0) {
@@ -94,19 +94,21 @@
           const date = new Date(item.date).toLocaleString("ko-KR");
 
           notice.innerHTML = `
-            <h3>${item.title}</h3>
-            <p>${item.content}</p>
-            <div class="date">🕒 ${date}</div>
+            <div class="notice-title">${item.title}</div>
+            <div class="notice-content">${item.content}</div>
+            <div class="notice-date">🕒 ${date}</div>
           `;
 
           container.appendChild(notice);
         });
       })
-      .catch(err => {
-        document.getElementById("notices").innerHTML = "<p>서버 오류로 공지사항을 불러올 수 없습니다.</p>";
-        console.error("공지사항 불러오기 오류:", err);
+      .catch(error => {
+        document.getElementById("notices").innerHTML =
+          "<p style='color:red;'>서버에서 공지사항을 불러오는 데 실패했습니다.</p>";
+        console.error("공지사항 불러오기 오류:", error);
       });
   </script>
 </body>
 </html>
+
 
