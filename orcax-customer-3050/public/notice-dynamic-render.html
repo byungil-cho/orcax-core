@@ -2,20 +2,26 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>공지사항 안내</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
       background-color: #f9fbff;
-      padding: 30px;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
       max-width: 800px;
-      margin: auto;
+      margin: 0 auto;
     }
 
     h2 {
       color: #003366;
       text-align: center;
       margin-bottom: 30px;
+      font-size: 1.5em;
     }
 
     .notice {
@@ -29,25 +35,46 @@
 
     .notice h3 {
       margin: 0;
-      font-size: 1.2em;
+      font-size: 1.1em;
       color: #222;
     }
 
     .notice p {
       margin: 10px 0 0;
       color: #444;
+      font-size: 0.95em;
     }
 
     .date {
-      font-size: 0.9em;
+      font-size: 0.85em;
       color: #888;
       margin-top: 10px;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+      h2 {
+        font-size: 1.3em;
+      }
+      .notice {
+        padding: 15px;
+      }
+      .notice h3 {
+        font-size: 1em;
+      }
+      .notice p {
+        font-size: 0.9em;
+      }
     }
   </style>
 </head>
 <body>
-  <h2>📢 공지사항</h2>
-  <div id="notices">불러오는 중...</div>
+  <div class="container">
+    <h2>📢 공지사항</h2>
+    <div id="notices">불러오는 중...</div>
+  </div>
 
   <script>
     fetch("/api/notices")
