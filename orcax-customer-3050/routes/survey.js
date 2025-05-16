@@ -1,36 +1,32 @@
 const express = require("express");
-const router = express.Router();
-const Survey = require("../models/Survey");
+const mongoose = require("mongoose");
+const cors = require("cors");
 
-// POST: 설문 저장
-router.post("/", async (req, res) => {
-  try {
-    const { name, rating, feedback } = req.body;
+const app = express();
+app.use(cors());
+app.use(express.json());
 
-    // 유효성 검사 추가
-    if (!rating) {
-      return res.status(400).json({ error: "만족도를 선택해주세요." });
-    }
+// 기존 공지사항 라우터
+const noticeRouter = require("./routes/notice");
+app.use("/api/notice", noticeRouter);
 
-    const newSurvey = new Survey({ name, rating, feedback });
-    await newSurvey.save();
-    res.status(200).json({ message: "설문 저장 완료!" });
-  } catch (error) {
-    console.error("설문 저장 오류:", error); // ❗ 로그 출력
-    res.status(500).json({ error: "설문 저장 실패" });
-  }
+// ✅ 설문조사 라우터 추가
+const surveyRouter = require("./routes/survey");
+app.use("/api/survey", surveyRouter);
+
+// MongoDB 연결
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+}).then(() => {
+  console.log("MongoDB 연결 성공");
+}).catch(err => {
+  console.error("MongoDB 연결 실패:", err.message);
 });
 
-// GET: 설문 전체 조회
-router.get("/", async (req, res) => {
-  try {
-    const surveys = await Survey.find().sort({ createdAt: -1 });
-    res.status(200).json(surveys);
-  } catch (error) {
-    console.error("설문 조회 오류:", error); // ❗ 로그 출력
-    res.status(500).json({ error: "설문 조회 실패" });
-  }
+// 포트 그대로 3050 사용
+const PORT = 3050;
+app.listen(PORT, () => {
+  console.log(`서버가 포트 ${PORT}에서 실행 중`);
 });
-
-module.exports = router;
 
