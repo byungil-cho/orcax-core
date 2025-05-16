@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Survey = require("../models/Survey");
 
-// POST /api/survey
+// 설문 등록
 router.post("/", async (req, res) => {
   try {
     const { name, rating, feedback } = req.body;
@@ -10,8 +10,17 @@ router.post("/", async (req, res) => {
     await newSurvey.save();
     res.status(200).json({ message: "설문 저장 완료!" });
   } catch (error) {
-    console.error("설문 저장 오류:", error);
     res.status(500).json({ error: "설문 저장 실패" });
+  }
+});
+
+// 설문 조회
+router.get("/", async (req, res) => {
+  try {
+    const surveys = await Survey.find().sort({ createdAt: -1 });
+    res.status(200).json(surveys);
+  } catch (error) {
+    res.status(500).json({ error: "설문 조회 실패" });
   }
 });
 
