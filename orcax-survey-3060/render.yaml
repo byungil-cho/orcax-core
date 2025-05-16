@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: orcax-survey-3060
+    env: node
+    plan: free
+    rootDir: orcax-survey-3060
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: MONGO_URI
+        value: <몽고URI_여기에_직접입력>
