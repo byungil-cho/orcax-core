@@ -2,92 +2,50 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>고객 만족도 설문 결과</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>설문 결과 보기</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: #f8fafc;
-      margin: 0;
-      padding: 0;
+      background: #f9f9f9;
+      padding: 20px;
     }
-    .container {
-      max-width: 720px;
-      margin: 40px auto;
-      background: #fff;
-      padding: 25px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-      border-radius: 10px;
-    }
-    h2 {
-      text-align: center;
-      color: #1e293b;
+    .survey {
+      max-width: 700px;
+      margin: auto;
     }
     .entry {
-      border-bottom: 1px solid #e2e8f0;
-      padding: 15px 0;
+      background: #fff;
+      margin-bottom: 12px;
+      padding: 14px;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
-    .entry:last-child {
-      border-bottom: none;
-    }
-    .label {
-      font-weight: bold;
-      color: #334155;
-    }
-    .value {
-      margin: 5px 0 10px 0;
-      color: #475569;
-    }
-    .no-data {
-      text-align: center;
-      color: #ef4444;
-      margin-top: 30px;
-    }
+    .entry p { margin: 4px 0; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>고객 만족도 설문 결과</h2>
-    <div id="results">
-      <p class="no-data">설문 데이터를 불러오는 중...</p>
-    </div>
+  <div class="survey">
+    <h2>📊 고객 만족도 설문 결과</h2>
+    <div id="resultBox"></div>
   </div>
 
   <script>
-    async function fetchResults() {
-      try {
-        const res = await fetch('/api/survey');
-        const data = await res.json();
-        const container = document.getElementById('results');
-
-        if (!Array.isArray(data) || data.length === 0) {
-          container.innerHTML = '<p class="no-data">현재 제출된 설문이 없습니다.</p>';
-          return;
-        }
-
-        container.innerHTML = '';
-        data.reverse().forEach(entry => {
-          const div = document.createElement('div');
-          div.className = 'entry';
-          div.innerHTML = `
-            <div class="label">이름:</div>
-            <div class="value">${entry.name || '익명'}</div>
-            <div class="label">만족도:</div>
-            <div class="value">${entry.satisfaction}</div>
-            <div class="label">의견:</div>
-            <div class="value">${entry.opinion || '(없음)'}</div>
-            <div class="label">제출 시간:</div>
-            <div class="value">${new Date(entry.date).toLocaleString()}</div>
-          `;
-          container.appendChild(div);
-        });
-      } catch (err) {
-        document.getElementById('results').innerHTML = 
-          '<p class="no-data">❌ 데이터를 불러올 수 없습니다.</p>';
-      }
+    async function fetchData() {
+      const res = await fetch('/api/survey');
+      const data = await res.json();
+      const container = document.getElementById('resultBox');
+      container.innerHTML = data.map(entry => `
+        <div class="entry">
+          <p><strong>이름:</strong> ${entry.name || '익명'}</p>
+          <p><strong>만족도:</strong> ${entry.satisfaction}</p>
+          <p><strong>의견:</strong> ${entry.comment}</p>
+          <p><em>${new Date(entry.date).toLocaleString()}</em></p>
+        </div>
+      `).join('');
     }
-
-    fetchResults();
+    fetchData();
   </script>
 </body>
 </html>
+
