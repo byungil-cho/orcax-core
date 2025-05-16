@@ -2,27 +2,82 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>고객 만족도 설문 결과</title>
+  <style>
+    body {
+      background-color: #f7f9fb;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    .card {
+      background: white;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+      max-width: 700px;
+      width: 90%;
+      text-align: center;
+    }
+    .title {
+      font-size: 28px;
+      font-weight: bold;
+      color: #0b2c57;
+      margin-bottom: 20px;
+    }
+    .emoji {
+      font-size: 24px;
+      margin-right: 8px;
+    }
+    #surveyResults {
+      font-size: 16px;
+      color: red;
+    }
+  </style>
 </head>
 <body>
-  <h2>📋 고객 만족도 설문 결과</h2>
-  <div id="survey-results">불러오는 중...</div>
+  <div class="card">
+    <div class="title">
+      <span class="emoji">📋</span> 고객 만족도 설문 결과
+    </div>
+    <div id="surveyResults">설문 데이터를 불러오지 못했습니다.</div>
+  </div>
 
   <script>
     async function fetchSurveys() {
       try {
-        const res = await fetch(`${window.location.origin}/api/surveys`);
-        const data = await res.json();
-        const container = document.getElementById('survey-results');
-        container.innerHTML = data.map(s => `<p><b>${s.name}</b>: ${s.comment}</p>`).join('');
-      } catch (error) {
-        document.getElementById('survey-results').innerHTML = '<span style="color:red;">설문 데이터를 불러오지 못했습니다.</span>';
+        const response = await fetch("https://orcax-survey-3060.onrender.com/api/surveys");
+        const surveys = await response.json();
+
+        const resultDiv = document.getElementById("surveyResults");
+
+        if (surveys.length === 0) {
+          resultDiv.innerText = "설문 데이터가 아직 없습니다.";
+          resultDiv.style.color = "#555";
+        } else {
+          resultDiv.innerHTML = surveys
+            .map(survey => `
+              <p><strong>${survey.name || "(이름 없음)"}:</strong> 
+              만족도 - ${survey.satisfaction}, 의견 - ${survey.comment}</p>
+            `).join("");
+          resultDiv.style.color = "#222";
+        }
+      } catch (err) {
+        console.error("오류:", err);
+        document.getElementById("surveyResults").innerText = "설문 데이터를 불러오는 중 오류가 발생했습니다.";
       }
     }
 
-    fetchSurveys(); // 반드시 <script> 태그 안에서 호출
+    fetchSurveys();
   </script>
 </body>
 </html>
+
 
 
