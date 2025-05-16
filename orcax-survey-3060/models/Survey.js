@@ -1,9 +1,14 @@
-const mongoose = require("mongoose");
+// models/Survey.js
+const mongoose = require('mongoose');
 
 const SurveySchema = new mongoose.Schema({
-  name: { type: String },
-  rating: { type: Number, required: true },
-  feedback: { type: String },
-}, { timestamps: true });
+  name: String,
+  satisfaction: String,
+  opinion: String,
+  date: {
+    type: Date,
+    default: Date.now
+  }
+});
 
-module.exports = mongoose.model("Survey", SurveySchema);
+module.exports = mongoose.model('Survey', SurveySchema);
