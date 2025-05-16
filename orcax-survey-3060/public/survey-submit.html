@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>고객 만족도 설문조사</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f1f5f9;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 500px;
+      margin: 40px auto;
+      background: white;
+      padding: 25px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      border-radius: 10px;
+    }
+    h2 {
+      text-align: center;
+      color: #1e293b;
+    }
+    label {
+      display: block;
+      margin-top: 18px;
+      font-weight: bold;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 12px;
+      margin-top: 8px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 25px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #1d4ed8;
+    }
+    .status {
+      margin-top: 16px;
+      text-align: center;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>고객 만족도 설문조사</h2>
+    <form id="surveyForm">
+      <label for="name">이름 (선택)</label>
+      <input type="text" id="name" name="name" placeholder="조병일" />
+
+      <label for="satisfaction">서비스 전반에 대한 만족도는?</label>
+      <select id="satisfaction" name="satisfaction" required>
+        <option value="">선택하세요</option>
+        <option value="매우 만족">매우 만족</option>
+        <option value="만족">만족</option>
+        <option value="보통">보통</option>
+        <option value="불만족">불만족</option>
+      </select>
+
+      <label for="opinion">추가 의견이나 건의사항이 있다면 적어주세요:</label>
+      <textarea id="opinion" name="opinion" rows="4" placeholder="여기에 작성해 주세요"></textarea>
+
+      <button type="submit">설문 제출</button>
+      <div class="status" id="status"></div>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById('surveyForm');
+    const status = document.getElementById('status');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = {
+        name: form.name.value,
+        satisfaction: form.satisfaction.value,
+        opinion: form.opinion.value
+      };
+
+      try {
+        const res = await fetch('/api/survey', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        const result = await res.json();
+        if (result.success) {
+          status.textContent = '✅ 제출이 완료되었습니다!';
+          status.style.color = 'green';
+          form.reset();
+        } else {
+          status.textContent = '❌ ' + result.message;
+          status.style.color = 'red';
+        }
+      } catch (err) {
+        status.textContent = '❌ 서버 오류가 발생했습니다.';
+        status.style.color = 'red';
+      }
+    });
+  </script>
+</body>
+</html>
