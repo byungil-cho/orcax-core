@@ -1,11 +1,13 @@
 const mongoose = require('mongoose');
 
-const surveySchema = new mongoose.Schema({
+const SurveySchema = new mongoose.Schema({
   name: String,
   satisfaction: String,
-  comment: String,
-}, {
-  timestamps: true
+  feedback: String,
+  createdAt: {
+    type: Date,
+    default: Date.now
+  }
 });
 
-module.exports = mongoose.model('Survey', surveySchema);
+module.exports = mongoose.model('Survey', SurveySchema);
