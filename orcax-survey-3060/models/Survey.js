@@ -4,10 +4,8 @@ const surveySchema = new mongoose.Schema({
   name: String,
   satisfaction: String,
   comment: String,
-  date: {
-    type: Date,
-    default: Date.now
-  }
+}, {
+  timestamps: true
 });
 
 module.exports = mongoose.model('Survey', surveySchema);
