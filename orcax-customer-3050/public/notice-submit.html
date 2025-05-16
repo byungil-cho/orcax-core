@@ -6,69 +6,96 @@
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: #f1f5f9;
-      padding: 20px;
-      text-align: center;
+      background-color: #f3f7fc;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
     }
-    .hidden { display: none; }
-    input, textarea {
-      padding: 10px;
-      margin: 10px 0;
-      width: 300px;
+    .container {
+      display: flex;
+      gap: 40px;
     }
-    .box {
-      background: white;
-      border-radius: 8px;
+    .card {
+      background-color: white;
       padding: 30px;
-      display: inline-block;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 320px;
     }
-    .success { color: green; margin-top: 10px; }
+    h2 {
+      margin-bottom: 20px;
+      color: #222;
+    }
+    input, textarea, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      font-size: 16px;
+    }
+    .hidden {
+      display: none;
+    }
+    .success {
+      color: green;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
-  <div class="box" id="loginBox">
-    <h2>관리자 로그인</h2>
-    <input type="password" id="password" placeholder="비밀번호 입력" />
-    <br />
-    <button onclick="checkPassword()">확인</button>
-    <p id="error" style="color:red;"></p>
-  </div>
 
-  <div class="box hidden" id="formBox">
-    <h2>📢 공지사항 등록</h2>
-    <input type="text" id="title" placeholder="제목" /><br />
-    <textarea id="content" rows="4" placeholder="내용을 입력하세요."></textarea><br />
-    <button onclick="submitNotice()">공지 등록</button>
-    <p class="success" id="successMessage" style="display:none;">✅ 공지 등록 성공!</p>
+  <div class="container">
+    <!-- 로그인 카드 -->
+    <div class="card" id="loginCard">
+      <h2>🔐 관리자 로그인</h2>
+      <input type="password" id="password" placeholder="비밀번호 입력" />
+      <button onclick="checkPassword()">확인</button>
+    </div>
+
+    <!-- 공지 작성 카드: 처음에는 숨겨짐 -->
+    <div class="card hidden" id="noticeCard">
+      <h2>📢 공지사항 등록</h2>
+      <input type="text" id="title" placeholder="제목" />
+      <textarea id="content" rows="4" placeholder="내용을 입력하세요."></textarea>
+      <button onclick="submitNotice()">공지 등록</button>
+      <div class="success" id="resultMsg"></div>
+    </div>
   </div>
 
   <script>
+    const ADMIN_PASSWORD = "2025";
+
     function checkPassword() {
-      const pw = document.getElementById("password").value;
-      if (pw === "2025") {
-        document.getElementById("loginBox").classList.add("hidden");
-        document.getElementById("formBox").classList.remove("hidden");
+      const input = document.getElementById("password").value;
+      if (input === ADMIN_PASSWORD) {
+        document.getElementById("loginCard").classList.add("hidden");
+        document.getElementById("noticeCard").classList.remove("hidden");
       } else {
-        document.getElementById("error").textContent = "비밀번호가 틀렸습니다.";
+        alert("비밀번호가 올바르지 않습니다.");
       }
     }
 
     async function submitNotice() {
       const title = document.getElementById("title").value;
       const content = document.getElementById("content").value;
-      const res = await fetch("/api/notices", {
+
+      const response = await fetch("/api/notices", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title, content })
       });
-      if (res.ok) {
-        document.getElementById("successMessage").style.display = "block";
+
+      if (response.ok) {
+        document.getElementById("resultMsg").innerText = "✅ 공지 등록 성공!";
         document.getElementById("title").value = "";
         document.getElementById("content").value = "";
+      } else {
+        document.getElementById("resultMsg").innerText = "❌ 등록 실패. 서버 확인 필요";
       }
     }
   </script>
+
 </body>
 </html>
+
 
