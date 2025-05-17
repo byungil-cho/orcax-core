@@ -135,11 +135,11 @@
   </div>
 
   <script>
-    // fetch and render
     function loadSurveys() {
       fetch('https://orcax-survey-3060.onrender.com/api/survey')
         .then(res => res.json())
         .then(data => {
+          console.log("불러온 설문 데이터:", data); // ✅ 콘솔 출력
           const tbody = document.getElementById('surveyBody');
           const chartMsg = document.getElementById('noDataMsg');
           tbody.innerHTML = '';
@@ -150,16 +150,14 @@
             return;
           }
 
-          // 최신 5개만
           const recent = data.slice(-5).reverse();
-
           recent.forEach(item => {
             const row = document.createElement('tr');
             row.innerHTML = `
-              <td data-label="이름">${item.name}</td>
-              <td data-label="만족도">${item.satisfaction}</td>
+              <td data-label="이름">${item.name || '이름없음'}</td>
+              <td data-label="만족도">${item.satisfaction || '-'}</td>
               <td data-label="의견">${item.feedback || '—'}</td>
-              <td data-label="제출일">${new Date(item.createdAt).toLocaleString()}</td>
+              <td data-label="제출일">${item.createdAt ? new Date(item.createdAt).toLocaleString() : '-'}</td>
               <td data-label="삭제">
                 <button class="delete-button" onclick="deleteSurvey('${item._id}')">삭제</button>
               </td>
@@ -167,7 +165,6 @@
             tbody.appendChild(row);
           });
 
-          // 통계
           const counts = {
             '매우 만족': 0,
             '만족': 0,
@@ -182,39 +179,39 @@
             }
           });
 
-          // Chart.js 도넛
-          const ctx = document.getElementById('satisfactionChart').getContext('2d');
+          const canvas = document.getElementById('satisfactionChart');
+          if (!canvas) {
+            console.error("Canvas element not found!");
+            return;
+          }
+
+          const ctx = canvas.getContext('2d');
           new Chart(ctx, {
             type: 'doughnut',
             data: {
               labels: Object.keys(counts),
               datasets: [{
                 data: Object.values(counts),
-                backgroundColor: [
-                  '#007BFF', '#28A745', '#FFC107', '#FD7E14', '#DC3545'
-                ],
+                backgroundColor: ['#007BFF', '#28A745', '#FFC107', '#FD7E14', '#DC3545'],
                 borderWidth: 1
               }]
             },
             options: {
               responsive: true,
               plugins: {
-                legend: {
-                  position: 'bottom'
-                }
+                legend: { position: 'bottom' }
               }
             }
           });
         })
         .catch(err => {
-          console.error(err);
+          console.error("데이터 로딩 오류:", err);
           document.getElementById('surveyBody').innerHTML =
             `<tr><td colspan="5" class="no-data">데이터를 불러오는 데 실패했습니다.</td></tr>`;
           document.getElementById('noDataMsg').textContent = '그래프를 표시할 수 없습니다.';
         });
     }
 
-    // 삭제 함수
     function deleteSurvey(id) {
       if (!confirm('정말 이 설문을 삭제하시겠습니까?')) return;
 
@@ -224,7 +221,7 @@
       .then(res => {
         if (res.ok) {
           alert('삭제 완료!');
-          loadSurveys(); // 재로드
+          loadSurveys();
         } else {
           alert('삭제 실패 (서버 응답 오류)');
         }
@@ -235,8 +232,7 @@
       });
     }
 
-    // 최초 실행
-    loadSurveys();
+    document.addEventListener('DOMContentLoaded', loadSurveys);
   </script>
 </body>
 </html>
