@@ -135,11 +135,40 @@
   </div>
 
   <script>
+    let chartInstance = null; // 기존 차트 저장용
+
+    function renderChart(counts) {
+      const canvas = document.getElementById('satisfactionChart');
+      const ctx = canvas.getContext('2d');
+
+      if (chartInstance) {
+        chartInstance.destroy(); // 이전 차트 제거
+      }
+
+      chartInstance = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: Object.keys(counts),
+          datasets: [{
+            data: Object.values(counts),
+            backgroundColor: ['#007BFF', '#28A745', '#FFC107', '#FD7E14', '#DC3545'],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: 'bottom' }
+          }
+        }
+      });
+    }
+
     function loadSurveys() {
       fetch('https://orcax-survey-3060.onrender.com/api/survey')
         .then(res => res.json())
         .then(data => {
-          console.log("불러온 설문 데이터:", data); // ✅ 콘솔 출력
+          console.log("불러온 설문 데이터:", data);
           const tbody = document.getElementById('surveyBody');
           const chartMsg = document.getElementById('noDataMsg');
           tbody.innerHTML = '';
@@ -179,30 +208,7 @@
             }
           });
 
-          const canvas = document.getElementById('satisfactionChart');
-          if (!canvas) {
-            console.error("Canvas element not found!");
-            return;
-          }
-
-          const ctx = canvas.getContext('2d');
-          new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-              labels: Object.keys(counts),
-              datasets: [{
-                data: Object.values(counts),
-                backgroundColor: ['#007BFF', '#28A745', '#FFC107', '#FD7E14', '#DC3545'],
-                borderWidth: 1
-              }]
-            },
-            options: {
-              responsive: true,
-              plugins: {
-                legend: { position: 'bottom' }
-              }
-            }
-          });
+          renderChart(counts); // ⭕ 차트 렌더링
         })
         .catch(err => {
           console.error("데이터 로딩 오류:", err);
