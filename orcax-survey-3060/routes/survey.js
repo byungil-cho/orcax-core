@@ -1,28 +1,29 @@
+// routes/survey.js
 const express = require('express');
 const router = express.Router();
-const Survey = require('../models/Survey');
+const mongoose = require('mongoose');
 
-// ✅ POST: 설문 저장
-router.post('/', async (req, res) => {
-  try {
-    const { name, satisfaction, feedback } = req.body;
-    const newSurvey = new Survey({ name, satisfaction, feedback });
-    await newSurvey.save();
-    res.status(200).json({ message: '설문 저장 완료' });
-  } catch (err) {
-    console.error('❌ 설문 저장 실패:', err.message);
-    res.status(500).json({ error: '서버 오류' });
-  }
-});
+// ✅ MongoDB 모델 임포트
+const Survey = require('../models/Survey'); // 경로는 실제 파일 위치에 맞게 조정
 
-// ✅ GET: 설문 리스트
-router.get('/', async (req, res) => {
+// 기존 GET/POST 라우터 외에 아래 DELETE 추가!
+router.delete('/:id', async (req, res) => {
   try {
-    const surveys = await Survey.find().sort({ createdAt: -1 });
-    res.status(200).json(surveys);
-  } catch (err) {
-    res.status(500).json({ error: '데이터 불러오기 실패' });
+    const id = req.params.id;
+
+    // MongoDB에서 문서 삭제
+    const result = await Survey.findByIdAndDelete(id);
+
+    if (!result) {
+      return res.status(404).send('삭제할 설문을 찾을 수 없습니다.');
+    }
+
+    res.sendStatus(200); // 성공
+  } catch (error) {
+    console.error('❌ 삭제 중 오류:', error.message);
+    res.status(500).send('서버 오류로 삭제에 실패했습니다.');
   }
 });
 
 module.exports = router;
+
