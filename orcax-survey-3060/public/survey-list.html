@@ -145,8 +145,7 @@
             return;
           }
 
-          // ✅ 모든 데이터를 그대로 출력
-          data.reverse().forEach(item => {
+          data.forEach(item => {
             const row = document.createElement('tr');
             row.innerHTML = `
               <td data-label="이름">${item.name || '이름없음'}</td>
@@ -179,7 +178,7 @@
       .then(res => {
         if (res.ok) {
           alert('삭제 완료!');
-          loadSurveys();
+          loadSurveys(); // ✅ 삭제 후 전체 재조회
         } else {
           alert('삭제 실패 (서버 응답 오류)');
         }
@@ -194,6 +193,7 @@
   </script>
 </body>
 </html>
+
 
 
 
