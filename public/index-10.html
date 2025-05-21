@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>메시지 전송</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      background: #f0f2f5;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 500px;
+      margin: 60px auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 30px;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+    button {
+      width: 100%;
+      background: #007bff;
+      color: #fff;
+      padding: 12px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .status {
+      text-align: center;
+      margin-top: 20px;
+      color: #28a745;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>✉️ 메시지 전송</h2>
+    <input type="text" id="name" placeholder="이름을 입력하세요" />
+    <textarea id="message" rows="6" placeholder="메시지를 입력하세요"></textarea>
+    <button onclick="sendMessage()">전송하기</button>
+    <div class="status" id="status"></div>
+  </div>
+
+  <script>
+    async function sendMessage() {
+      const name = document.getElementById('name').value.trim();
+      const message = document.getElementById('message').value.trim();
+      const statusDiv = document.getElementById('status');
+
+      if (!name || !message) {
+        statusDiv.textContent = '이름과 메시지를 모두 입력해주세요.';
+        statusDiv.style.color = 'red';
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/messages', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, message })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          statusDiv.textContent = result.message || '메시지가 전송되었습니다.';
+          statusDiv.style.color = '#28a745';
+          document.getElementById('name').value = '';
+          document.getElementById('message').value = '';
+        } else {
+          statusDiv.textContent = result.error || '전송에 실패했습니다.';
+          statusDiv.style.color = 'red';
+        }
+      } catch (err) {
+        statusDiv.textContent = '서버 연결 실패';
+        statusDiv.style.color = 'red';
+      }
+    }
+  </script>
+</body>
+</html>

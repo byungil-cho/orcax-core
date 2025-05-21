@@ -1,0 +1,15 @@
+{
+  "name": "orcax-customer-3050",
+  "version": "1.0.0",
+  "description": "공지사항 및 만족도 API 서버",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongoose": "^7.6.1",
+    "dotenv": "^16.3.1",
+    "cors": "^2.8.5"
+  }
+}
